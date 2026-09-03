@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>DayFlow</title>
+<meta name="description" content="A calm, personal day planner." />
+<meta name="theme-color" content="#06110D" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="bg-layer"></div>
+    <div id="bg-overlay"></div>
+
+    <header id="top-bar" class="top-bar">
+      <span class="brand">DayFlow</span>
+    </header>
+
+    <main id="view" class="view" role="main"></main>
+
+    <div class="nav-bar-wrap">
+      <nav id="nav-bar" class="nav nav-bar" aria-label="Main navigation"></nav>
+    </div>
+
+    <button id="fab" class="fab" aria-label="Add" aria-haspopup="true">+</button>
+
+    <div id="sheet-backdrop" class="sheet-backdrop hidden"></div>
+    <div id="sheet" class="sheet hidden" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
