@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>
+<linearGradient id="tile" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0E3140"/><stop offset="1" stop-color="#06141A"/></linearGradient>
+<linearGradient id="orb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9E6F4"/><stop offset="1" stop-color="#3492AB"/></linearGradient>
+<linearGradient id="ln" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FD8EA"/><stop offset="1" stop-color="#3492AB"/></linearGradient>
+</defs>
+<rect width="512" height="512" rx="112" fill="url(#tile)"/>
+<g fill="none" stroke-linecap="round" stroke-width="18">
+<circle cx="256" cy="256" r="164" stroke="#3492AB" stroke-dasharray="560 470" transform="rotate(-200 256 256)" opacity=".75"/>
+<circle cx="256" cy="256" r="116" stroke="#5CBED6" stroke-dasharray="410 320" transform="rotate(-20 256 256)"/>
+<circle cx="256" cy="256" r="68" stroke="#8FD8EA" stroke-dasharray="240 190" transform="rotate(150 256 256)"/>
+</g>
+<circle cx="256" cy="256" r="22" fill="url(#orb)"/>
+</svg>
