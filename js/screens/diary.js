@@ -13,6 +13,9 @@ import { noteDaysHtml } from "../components/noteCards.js";
 let dvFilter = "all"; // "all" or a notebook id
 let dvGoal = null; // inside the Goals notebook: the goal being viewed
 
+export function getDiaryState() { return { filter: dvFilter, goal: dvGoal }; }
+export function setDiaryState(s) { if (s) { dvFilter = s.filter || "all"; dvGoal = s.goal || null; } }
+
 const countLabel = (n) => `${n} note${n === 1 ? "" : "s"}`;
 
 function visibleNotes() {

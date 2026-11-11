@@ -8,6 +8,8 @@ import { showUndoToast } from "./toast.js";
 import { swatchesHtml, wireSwatches, fieldErrorHtml, showFieldError, clearFieldError } from "../forms.js";
 import { goalNorm } from "../goals.js";
 import { escapeHtml, dateKey, GOAL_EMOJIS, PALETTE, uid } from "../utils.js";
+import { trackDraft } from "../session.js";
+import { hardenTextFields } from "../textfield.js";
 
 // A wider set to pick from; anything else can be typed or pasted into the "Your own" box.
 const MORE_EMOJIS = ["🎯","🌱","🏆","📈","🔥","💡","🧗","📖","📚","✍️","🎨","🎵","🎸","🎹","🏃","🚴","🏊","🧘","💪","🥗","💧","😴","🧠","💻","🛠️","🔬","🧪","📐","🗣️","🌍","✈️","🏠","💰","🛒","🧹","🌿","🐶","❤️","🤝","🎓","📝","⭐","🚀","🎮","📷","🍳","🧵","⚽"];
@@ -41,6 +43,7 @@ export function openGoalComposer(existing = null, onSaved) {
   const savedMins = g.targetMins || Number(raw.targetMins) || 0;
   const savedDate = g.targetDate || raw.targetDate || "";
 
+  trackDraft("goal", { id: existing && existing.id });
   openSheet(`
     <button class="icon-btn sheet-close" data-action="close" aria-label="Close">✕</button>
     <h2 class="sheet-title">${existing ? "Edit goal" : "New goal"} ◎</h2>
@@ -147,6 +150,7 @@ export function openGoalComposer(existing = null, onSaved) {
         <input type="text" data-ms="${i}" value="${escapeHtml(m.title)}" placeholder="e.g. Finish chapter 1" maxlength="80" />
         <button type="button" class="icon-btn" data-ms-rm="${i}" aria-label="Remove milestone">✕</button>
       </div>`).join("");
+    hardenTextFields(msList);
     msList.querySelectorAll("[data-ms]").forEach((inp) => inp.addEventListener("input", () => { ms[+inp.getAttribute("data-ms")].title = inp.value; }));
     msList.querySelectorAll("[data-ms-rm]").forEach((b) => b.addEventListener("click", () => { ms.splice(+b.getAttribute("data-ms-rm"), 1); paintMs(); }));
     if (focusLast) { const all = msList.querySelectorAll("[data-ms]"); if (all.length) all[all.length - 1].focus(); }

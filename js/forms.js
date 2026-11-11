@@ -1,3 +1,4 @@
+import { trackDraft } from "./session.js";
 import { store } from "./store.js";
 import { openSheet, closeSheet, wireSheetClose, sheet, notifyChanged } from "./components/sheet.js";
 import { blocksForPicker, blockPickerLabel, getBlock, blockIsOvernight, blockTimesOn } from "./timeblocks.js";
@@ -389,6 +390,7 @@ export function openTaskComposer(existing = null, presetDate = null, presetLink 
   let color = t.color;
   let durationOnly = !t.startTime && t.durationMins ? t.durationMins : null;
 
+  trackDraft("task", { id: existing && existing.id, presetDate, presetLink, presetBlockId, presetGoalId });
   openSheet(`
     <button class="icon-btn sheet-close" data-action="close" aria-label="Close">✕</button>
     <h2 class="sheet-title">${existing ? "Edit task" : "New task"} ${TYPE_EMOJI.task}</h2>
@@ -523,6 +525,7 @@ export function openEventComposer(existing = null, presetDate = null, onSaved, p
   };
   let color = e.color;
 
+  trackDraft("event", { id: existing && existing.id, presetDate, presetBlockId, presetGoalId });
   openSheet(`
     <button class="icon-btn sheet-close" data-action="close" aria-label="Close">✕</button>
     <h2 class="sheet-title">${existing ? "Edit event" : "New event"} ${TYPE_EMOJI.event}</h2>
@@ -610,6 +613,7 @@ export function openDeadlineComposer(existing = null, presetDate = null, onSaved
   };
   let color = d.color;
 
+  trackDraft("deadline", { id: existing && existing.id, presetDate, presetBlockId, presetGoalId });
   openSheet(`
     <button class="icon-btn sheet-close" data-action="close" aria-label="Close">✕</button>
     <h2 class="sheet-title">${existing ? "Edit deadline" : "New deadline"} ${TYPE_EMOJI.deadline}</h2>

@@ -1,4 +1,4 @@
-const CACHE_NAME = "dayflow-cache-v44";
+const CACHE_NAME = "dayflow-cache-v45";
 const SCOPE_URL = new URL(self.registration.scope);
 
 const PRECACHE_URLS = [
@@ -16,6 +16,8 @@ const PRECACHE_URLS = [
   "./js/richtext.js",
   "./js/components/notePage.js",
   "./js/unfinished.js",
+  "./js/session.js",
+  "./js/textfield.js",
   "./js/components/unfinishedSheet.js",
   "./js/components/noteCards.js",
   "./js/components/noteSheet.js",

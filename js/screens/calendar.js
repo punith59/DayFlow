@@ -152,6 +152,8 @@ function calHistoryLines(day) {
 // Tapping a day swaps the Calendar screen for that day, keeping the background, glass UI and
 // the bottom navigation. ✕ (or Escape) goes back to the month; arrows / date pill move between days.
 
+export function getCalendarState() { return { month: calViewMonth, day: calDay }; }
+export function setCalendarState(s) { if (s && s.month) calViewMonth = s.month; calDay = s && s.day ? s.day : null; }
 let calDay = null;        // date key of the day being viewed, or null for the month grid
 let calContainer = null;
 

@@ -1,3 +1,6 @@
+import { hardenTextFields } from "../textfield.js";
+import { sheetOpened, clearDraft } from "../session.js";
+
 const backdrop = document.getElementById("sheet-backdrop");
 export const sheet = document.getElementById("sheet");
 
@@ -5,6 +8,8 @@ backdrop.addEventListener("click", closeSheet);
 
 export function openSheet(html) {
   sheet.innerHTML = html;
+  hardenTextFields(sheet);
+  sheetOpened();
   sheet.classList.remove("hidden");
   backdrop.classList.remove("hidden");
   sheet.scrollTop = 0;
@@ -19,6 +24,7 @@ export function openSheet(html) {
 }
 
 export function closeSheet() {
+  clearDraft();
   sheet.classList.add("hidden");
   backdrop.classList.add("hidden");
   sheet.innerHTML = "";

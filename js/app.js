@@ -1,13 +1,17 @@
 import { store } from "./store.js";
 import { onRouteChange, initRouter, currentRoute, navigate } from "./router.js";
 import { openAddMenu } from "./modal.js";
-import { openCreateMenu } from "./forms.js";
-import { renderToday, getTodaySelectedDate, getTodayCreatePresetDate } from "./screens/today.js";
-import { getCalendarCreatePresetDate } from "./screens/calendar.js";
+import { openCreateMenu, openTaskComposer, openEventComposer, openDeadlineComposer } from "./forms.js";
+import { openGoalComposer } from "./components/goalSheet.js";
+import { openNotePage, notePageState } from "./components/notePage.js";
+import { registerViewState, registerNoteState, restoreUiEarly, startSession, takeDraft, applyDraft } from "./session.js";
+import { renderToday, getTodaySelectedDate, setTodaySelectedDate, getTodayCreatePresetDate } from "./screens/today.js";
+import { getCalendarCreatePresetDate, getCalendarState, setCalendarState } from "./screens/calendar.js";
 import { renderCalendar } from "./screens/calendar.js";
-import { renderDiary, diaryFabAction } from "./screens/diary.js";
-import { renderGoals, goalsFabAction } from "./screens/goals.js";
+import { renderDiary, diaryFabAction, getDiaryState, setDiaryState } from "./screens/diary.js";
+import { renderGoals, goalsFabAction, getGoalsState, setGoalsState } from "./screens/goals.js";
 import { renderMore } from "./screens/more.js";
+import { startTextFieldGuard } from "./textfield.js";
 
 const SCREENS = [
   { id: "today", label: "Today", icon: "○", render: renderToday },
@@ -85,8 +89,39 @@ if (navigator.storage && navigator.storage.persist) {
   navigator.storage.persist().catch(() => {});
 }
 
+// Remember where you were (tab, day, notebook, goal) so being closed in the background doesn't send you back to Today.
+registerViewState("today", getTodaySelectedDate, setTodaySelectedDate);
+registerViewState("calendar", getCalendarState, setCalendarState);
+registerViewState("diary", getDiaryState, setDiaryState);
+registerViewState("goals", getGoalsState, setGoalsState);
+registerNoteState(notePageState);
+const savedNote = restoreUiEarly();
+startSession();
+
+startTextFieldGuard();
 onRouteChange(renderScreen);
 initRouter();
+
+// Put back what was open: a note, or a half-filled form.
+setTimeout(() => {
+  try {
+    if (savedNote && savedNote.id) {
+      const note = store.getNotes().find((n) => n.id === savedNote.id);
+      if (note) { openNotePage(note); return; }
+    }
+    const draft = takeDraft();
+    if (!draft) return;
+    const a = draft.args || {};
+    const find = (list) => (a.id ? list.find((x) => x.id === a.id) || null : null);
+    if (a.id && !find(draft.kind === "task" ? store.getTasks() : draft.kind === "event" ? store.getEvents() : draft.kind === "deadline" ? store.getDeadlines() : store.getGoals())) return;
+    if (draft.kind === "task") openTaskComposer(find(store.getTasks()), a.presetDate, a.presetLink, undefined, a.presetBlockId, a.presetGoalId);
+    else if (draft.kind === "event") openEventComposer(find(store.getEvents()), a.presetDate, undefined, a.presetBlockId, a.presetGoalId);
+    else if (draft.kind === "deadline") openDeadlineComposer(find(store.getDeadlines()), a.presetDate, undefined, a.presetBlockId, a.presetGoalId);
+    else if (draft.kind === "goal") openGoalComposer(find(store.getGoals()));
+    else return;
+    applyDraft(draft);
+  } catch (e) { console.error("DayFlow restore error:", e); }
+}, 350);
 
 // First screen is drawn: let the loading screen fade away.
 {

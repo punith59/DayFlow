@@ -18,6 +18,8 @@ import { noteDaysHtml } from "../components/noteCards.js";
 import { openNotePage } from "../components/notePage.js";
 
 let glView = null;          // id of the goal being viewed, or null for the list
+export function getGoalsState() { return { view: glView }; }
+export function setGoalsState(s) { glView = s && s.view ? s.view : null; }
 let glShowAllEarlier = false;
 const GL_EARLIER_LIMIT = 6;
 

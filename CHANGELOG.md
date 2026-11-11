@@ -1,5 +1,10 @@
 # DayFlow changelog
 
+## v45 — No password key in forms; the app remembers where you were
+- Every text box in the forms (task, event, deadline, goal, milestones, notebook, time blocks, colour hex, Drive client ID…) is now the same plain-text field the note Title uses, so the browser's password-manager key no longer appears above the keyboard. Looks and behaves the same.
+- If the phone closes DayFlow in the background, opening it again returns you to the tab you were on (and the day, notebook or goal you were viewing) if it was within 6 hours.
+- A half-filled task, event, deadline or goal form comes back with what you typed, and an open note reopens, if it was within 24 hours. Saving or closing a form clears it. Notes are also saved the moment the app goes to the background.
+
 ## v44 — Goal notes on the goal page
 - A goal's page now has a **Notes** section (before the Edit/Pause buttons) with its notes grouped by day and date, same as the Diary. **+ Add** writes a new note for that goal; tap a note to open it.
 

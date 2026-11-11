@@ -374,6 +374,7 @@ export const store = {
     if (!keepSettings) keys.push(KEYS.settings, KEYS.palette, KEYS.colorHistory);
     try {
       keys.forEach((k) => localStorage.removeItem(k));
+      localStorage.removeItem("dfui"); localStorage.removeItem("dfdraft");
     } catch (e) {
       store.restoreRawSnapshot(before);
       throw new Error("Couldn't wipe the data. Nothing was changed.");

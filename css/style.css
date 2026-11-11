@@ -1670,3 +1670,18 @@ body.np-open .fab, body.np-open .nav-bar-wrap { visibility: hidden; }
 .co-due-row input { width: auto; max-width: 150px; padding: 4px 8px; font-size: 13px; }
 .gd-notes .nt-day:first-of-type { margin-top: 4px; }
 .gd-notes .nt-card { width: 100%; }
+
+/* ---------- Plain-text fields (js/textfield.js): same look as the old inputs / textareas ---------- */
+.tx { display: block; width: 100%; box-sizing: border-box; outline: 0; cursor: text; -webkit-user-modify: read-write-plaintext-only; color: var(--text); overflow-wrap: anywhere; }
+.tx:empty::before { content: attr(data-placeholder); color: var(--text-muted); pointer-events: none; }
+.tx-single { white-space: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overflow-wrap: normal; }
+.tx-single::-webkit-scrollbar { display: none; }
+.tx-multi { white-space: pre-wrap; }
+.field .tx, .quick-task-add .tx, .cp-row .tx, .emoji-own .tx, .gf-ms-row .tx {
+  background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.16); border-radius: var(--radius-sm); padding: 9px 10px; font-size: 14px; line-height: 1.45;
+}
+.field .tx-single, .quick-task-add .tx-single, .gf-ms-row .tx-single, .emoji-own .tx-single { min-height: calc(1.45em + 20px); }
+.field .tx:focus, .quick-task-add .tx:focus, .cp-row .tx:focus, .gf-ms-row .tx:focus, .emoji-own .tx:focus { border-color: var(--accent); }
+.quick-task-add .tx, .gf-ms-row .tx, .emoji-own .tx { flex: 1; min-width: 0; width: auto; }
+.cp-row .tx.cp-hex { width: auto; flex: 1; min-width: 0; }

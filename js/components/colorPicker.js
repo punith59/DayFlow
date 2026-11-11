@@ -1,6 +1,7 @@
 // A clean in-app colour picker (replaces the browser's native one, which looks toy-like on phones):
 // saturation/brightness field + hue slider + hex input, shown as a small panel above everything else.
 import { normalizeHex } from "../utils.js";
+import { hardenTextFields } from "../textfield.js";
 
 let cpLayer = null;
 
@@ -81,6 +82,7 @@ export function openColorPicker(opts) {
       <button class="btn btn-primary" data-cp="confirm">${confirmLabel}</button>
     </div>`;
 
+  hardenTextFields(panel);
   const sv = panel.querySelector("[data-cp-sv]");
   const hue = panel.querySelector("[data-cp-hue]");
   const input = panel.querySelector(".cp-hex");

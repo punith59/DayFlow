@@ -713,6 +713,8 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
     document.removeEventListener("selectionchange", refreshState);
     if (vv) { vv.removeEventListener("resize", fit); vv.removeEventListener("scroll", fit); }
     window.removeEventListener("popstate", onPop);
+    document.removeEventListener("visibilitychange", onHide);
+    window.removeEventListener("pagehide", onHide);
     root.remove();
     document.body.classList.remove("np-open");
     openPage = null;
@@ -729,8 +731,14 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
   function onPop() { save(true); window.removeEventListener("popstate", onPop); close(); }
   try { history.pushState({ notePage: 1 }, "", location.href); window.addEventListener("popstate", onPop); } catch (e) { /* no history API */ }
 
-  openPage = { close: finish };
+  // Saved the moment the app goes to the background, so nothing typed is lost if the phone then closes it.
+  const onHide = () => { if (document.visibilityState === "hidden") save(false); };
+  document.addEventListener("visibilitychange", onHide);
+  window.addEventListener("pagehide", onHide);
+  openPage = { close: finish, state: () => { save(false); return noteId ? { id: noteId } : null; } };
   if (!existing) titleEl.focus();
 }
 
 export function notePageIsOpen() { return !!openPage; }
+/** What the session saver needs to reopen this note after the app was closed in the background. */
+export function notePageState() { return openPage && openPage.state ? openPage.state() : null; }
