@@ -1,0 +1,129 @@
+{
+  "name": "DayFlow",
+  "short_name": "DayFlow",
+  "description": "A calm, personal day planner that puts you in control.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#050F14",
+  "theme_color": "#050F14",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "id": "./",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "categories": [
+    "productivity",
+    "lifestyle"
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "New task",
+      "short_name": "New task",
+      "description": "Add a task",
+      "url": "./index.html?add=task",
+      "icons": [
+        {
+          "src": "./icons/shortcut-task-round.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "./icons/shortcut-task.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    {
+      "name": "New event",
+      "short_name": "New event",
+      "description": "Add an event",
+      "url": "./index.html?add=event",
+      "icons": [
+        {
+          "src": "./icons/shortcut-event-round.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "./icons/shortcut-event.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    {
+      "name": "New deadline",
+      "short_name": "New deadline",
+      "description": "Add a deadline",
+      "url": "./index.html?add=deadline",
+      "icons": [
+        {
+          "src": "./icons/shortcut-deadline-round.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "./icons/shortcut-deadline.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    {
+      "name": "New note",
+      "short_name": "New note",
+      "description": "Write a note",
+      "url": "./index.html?add=note",
+      "icons": [
+        {
+          "src": "./icons/shortcut-note-round.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "./icons/shortcut-note.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    }
+  ]
+}
