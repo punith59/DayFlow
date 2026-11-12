@@ -1,7 +1,7 @@
 # DayFlow changelog
 
 ## v47 — Quick-add shortcuts
-- Long-press the installed DayFlow icon to get **New task**, **New event**, **New deadline** and **New note**; each opens that form straight away (drag one to the home screen for its own icon). Android reads the list when the app is installed, so remove and reinstall DayFlow once (back up first) to see it.
+- Long-press the installed DayFlow icon to get **New task**, **New event**, **New deadline** and **New note**; each opens that form straight away (drag one to the home screen for its own icon). Shortcut icons are full-bleed with larger symbols so they fill the round frame. Android reads the list when the app is installed, so remove and reinstall DayFlow once (back up first) to see it.
 
 ## v46 — Shorter memory, with an off switch
 - "Where you left off" (screen, open note, half-filled form) is now restored only within 30 minutes of leaving the app, so closing DayFlow and opening it later starts fresh on Today.

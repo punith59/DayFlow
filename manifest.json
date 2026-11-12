@@ -54,7 +54,8 @@
         {
           "src": "./icons/shortcut-task.png",
           "sizes": "192x192",
-          "type": "image/png"
+          "type": "image/png",
+          "purpose": "maskable"
         }
       ]
     },
@@ -67,7 +68,8 @@
         {
           "src": "./icons/shortcut-event.png",
           "sizes": "192x192",
-          "type": "image/png"
+          "type": "image/png",
+          "purpose": "maskable"
         }
       ]
     },
@@ -80,7 +82,8 @@
         {
           "src": "./icons/shortcut-deadline.png",
           "sizes": "192x192",
-          "type": "image/png"
+          "type": "image/png",
+          "purpose": "maskable"
         }
       ]
     },
@@ -93,7 +96,8 @@
         {
           "src": "./icons/shortcut-note.png",
           "sizes": "192x192",
-          "type": "image/png"
+          "type": "image/png",
+          "purpose": "maskable"
         }
       ]
     }
