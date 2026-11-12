@@ -43,5 +43,59 @@
     "productivity",
     "lifestyle"
   ],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "New task",
+      "short_name": "New task",
+      "description": "Add a task",
+      "url": "./index.html?add=task",
+      "icons": [
+        {
+          "src": "./icons/shortcut-task.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "New event",
+      "short_name": "New event",
+      "description": "Add an event",
+      "url": "./index.html?add=event",
+      "icons": [
+        {
+          "src": "./icons/shortcut-event.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "New deadline",
+      "short_name": "New deadline",
+      "description": "Add a deadline",
+      "url": "./index.html?add=deadline",
+      "icons": [
+        {
+          "src": "./icons/shortcut-deadline.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "New note",
+      "short_name": "New note",
+      "description": "Write a note",
+      "url": "./index.html?add=note",
+      "icons": [
+        {
+          "src": "./icons/shortcut-note.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

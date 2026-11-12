@@ -1,4 +1,4 @@
-const CACHE_NAME = "dayflow-cache-v46";
+const CACHE_NAME = "dayflow-cache-v47";
 const SCOPE_URL = new URL(self.registration.scope);
 
 const PRECACHE_URLS = [
@@ -49,6 +49,10 @@ const PRECACHE_URLS = [
   "./icons/icon-maskable-512.png",
   "./icons/apple-touch-icon.png",
   "./img/bg.jpg",
+  "./icons/shortcut-task.png",
+  "./icons/shortcut-event.png",
+  "./icons/shortcut-deadline.png",
+  "./icons/shortcut-note.png",
 ].map((p) => new URL(p, SCOPE_URL).toString());
 
 self.addEventListener("install", (event) => {

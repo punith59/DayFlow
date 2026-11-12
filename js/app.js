@@ -95,6 +95,15 @@ registerViewState("calendar", getCalendarState, setCalendarState);
 registerViewState("diary", getDiaryState, setDiaryState);
 registerViewState("goals", getGoalsState, setGoalsState);
 registerNoteState(notePageState);
+// Home-screen shortcut (long-press the app icon): index.html?add=task|event|deadline|note opens that form straight away.
+const quickAdd = (() => {
+  try {
+    const k = new URLSearchParams(window.location.search).get("add");
+    if (!k) return null;
+    history.replaceState(history.state, "", window.location.pathname + window.location.hash);
+    return ["task", "event", "deadline", "note"].includes(k) ? k : null;
+  } catch (e) { return null; }
+})();
 const savedNote = restoreUiEarly();
 startSession();
 
@@ -105,6 +114,13 @@ initRouter();
 // Put back what was open: a note, or a half-filled form.
 setTimeout(() => {
   try {
+    if (quickAdd) {
+      if (quickAdd === "task") openTaskComposer();
+      else if (quickAdd === "event") openEventComposer();
+      else if (quickAdd === "deadline") openDeadlineComposer();
+      else openNotePage();
+      return;
+    }
     if (savedNote && savedNote.id) {
       const note = store.getNotes().find((n) => n.id === savedNote.id);
       if (note) { openNotePage(note); return; }
