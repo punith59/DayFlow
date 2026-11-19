@@ -65,7 +65,7 @@ export function wireSwatches(groupId, onPick) {
 }
 
 // ---- Time block picker (shown only once the user has created time blocks) ----
-function blockOptionsHtml(day, selectedKey) {
+export function blockOptionsHtml(day, selectedKey) {
   const opts = blockPickerOptions(day);
   const { id: selId } = parseBlockKey(selectedKey);
   const sel = selId ? getBlock(selId) : null;

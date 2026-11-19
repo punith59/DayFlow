@@ -1707,3 +1707,15 @@ body.np-open .fab, body.np-open .nav-bar-wrap { visibility: hidden; }
 .tb-time-sub .tb-time-day { width: 34px; }
 .tb-add-time { margin: 6px 0 10px; padding: 6px 12px; font-size: 13px; }
 .tb-add-sub { margin: 2px 0 8px 42px; }
+
+/* Cards aren't text you select: holding or tapping one opens its menu/overview, so the phone must not select the word and offer a web search.
+   Text boxes, the note editor and the sheets' fields are not in this list, so typing and selecting there are unchanged. */
+.item-card, .swipe-wrap, .rail-row, .rail-card, .rail-item, .rail-block, .rail-nest, .cd-row, .bs-item, .tb-row, .goal-card, .goal-group {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Note page: if the keyboard is a few pixels shorter than the page for a moment, show the tool bar's own dark colour, not the wallpaper behind it. */
+.np::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 160px; background: #020608; pointer-events: none; }

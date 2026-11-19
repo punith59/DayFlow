@@ -1,5 +1,14 @@
 # DayFlow changelog
 
+## v54 — Note tool bar stays put when you go to a new line
+- Moving to the next line in a note no longer makes the tool bar hop up and down or leave a see-through strip above the keyboard. Small keyboard height changes now wait until they settle (opening and closing the keyboard still follow immediately), and the area under the bar is filled with its own dark colour.
+
+## v53 — Reschedule can attach a time block
+- The Reschedule window (tap menu and the Unfinished list) now has a **Time block** choice (shown once you have time blocks). Picking one replaces the card's start and end time with the block's time for that date (a deadline's due time follows the block's start and is locked until you unlink it). Changing the date re-reads that day's block time; if the block isn't on the new date its time isn't used. Undo puts back the previous time and block.
+
+## v52 — Cards no longer select text
+- Tapping or holding a task, event, deadline or time block card (Today, Calendar day view, block sheet, goals, time block list) no longer selects the word and shows the phone's "search" bar. Text boxes and the note editor still select as before.
+
 ## v51 — A time block can repeat more than once a day
 - In the time block editor, **+ Add another time** adds a second (third…) start and end for the same block, e.g. Gym 6–7 AM and 6–7 PM. With "Different times on different days" on, each day has its own **+ Another time on…** button. Times on one day can't overlap.
 - Each time shows as its own card on Today and in the Calendar. When you attach a task, event or deadline to a block, the picker lists each time separately (e.g. "Gym — 6:00 AM–7:00 AM" and "Gym — 6:00 PM–7:00 PM"), and the item stays under the one you chose.

@@ -2,9 +2,10 @@ import { store } from "../store.js";
 import { openSheet, closeSheet, wireSheetClose, sheet, notifyChanged } from "./sheet.js";
 import { openPopover, closePopover, popover } from "./popover.js";
 import { showUndoToast } from "./toast.js";
-import { escapeHtml, timeToMinutes, dateKey, TYPE_EMOJI, deadlineStatus, isInPast, withHistory, closeOpenSegment, taskSnapshot } from "../utils.js";
+import { blockPickerOptions, getBlock, blockSlotTimes, blockKey, parseBlockKey, blockIsOvernight } from "../timeblocks.js";
+import { keyToDate, escapeHtml, timeToMinutes, dateKey, TYPE_EMOJI, deadlineStatus, isInPast, withHistory, closeOpenSegment, taskSnapshot } from "../utils.js";
 import { relinkPatch } from "../unfinished.js";
-import { openTaskComposer, openEventComposer, openDeadlineComposer, fieldErrorHtml, showFieldError, clearFieldError } from "../forms.js";
+import { openTaskComposer, openEventComposer, openDeadlineComposer, fieldErrorHtml, showFieldError, clearFieldError, blockOptionsHtml } from "../forms.js";
 
 const LABEL = { task: "Task", event: "Event", deadline: "Deadline" };
 
@@ -98,6 +99,12 @@ export function openRescheduleSheet(kind, item, onChange) {
       <label>${isDeadline ? "Due date" : "Date"}</label>
       <input type="date" id="rs-date" value="${dateVal}" />
     </div>
+    ${store.getLiveTimeBlocks().length ? `
+      <div class="field">
+        <label>Time block (optional)</label>
+        <select id="rs-block">${blockOptionsHtml(dateVal, item.blockId ? blockKey(item.blockId, item.blockSlot) : "")}</select>
+        <p class="field-hint field-hint-after" id="rs-block-hint"></p>
+      </div>` : ""}
     ${isDeadline ? `
       <div class="field">
         <label>Due time (optional)</label>
@@ -119,6 +126,44 @@ export function openRescheduleSheet(kind, item, onChange) {
 
   wireSheetClose();
   document.getElementById("rs-cancel").addEventListener("click", closeSheet);
+
+  // Time block: choosing one makes the card take that block's time (replacing the time that was there). A deadline's due time follows the block's start.
+  const blockSel = document.getElementById("rs-block");
+  if (blockSel) {
+    const dateEl = document.getElementById("rs-date");
+    const startEl = document.getElementById("rs-start");
+    const endEl = document.getElementById("rs-end");
+    const hint = document.getElementById("rs-block-hint");
+    const adopt = () => {
+      const k = parseBlockKey(blockSel.value);
+      const day = dateEl.value;
+      const onThatDay = k.id && day && blockPickerOptions(day).some((o) => o.key === blockSel.value);
+      if (isDeadline) { startEl.disabled = !!onThatDay; }
+      if (!onThatDay) { hint.textContent = k.id && day ? "This block isn't on that date, so its time isn't used." : ""; return; }
+      const tm = blockSlotTimes(getBlock(k.id), keyToDate(day).getDay(), k.slot);
+      startEl.value = tm.startTime;
+      if (isDeadline) {
+        hint.textContent = "Due time follows the block's start. Unlink it to choose your own time.";
+      } else if (blockIsOvernight(tm)) {
+        endEl.value = "";
+        hint.textContent = "Overnight block: only the start time is filled in.";
+      } else {
+        endEl.value = tm.endTime;
+        hint.textContent = "Time taken from the block — change it if you like.";
+      }
+    };
+    blockSel.addEventListener("change", adopt);
+    dateEl.addEventListener("change", () => {
+      blockSel.innerHTML = blockOptionsHtml(dateEl.value, blockSel.value);
+      adopt();
+    });
+    // Opening an already-linked deadline: keep its time, just lock the field.
+    if (isDeadline && blockSel.value && dateEl.value && blockPickerOptions(dateEl.value).some((o) => o.key === blockSel.value)) {
+      startEl.disabled = true;
+      hint.textContent = "Due time follows the block's start. Unlink it to choose your own time.";
+    }
+  }
+
   document.getElementById("rs-save").addEventListener("click", () => {
     const newDate = document.getElementById("rs-date").value || dateKey();
     const newStart = document.getElementById("rs-start").value || null;
@@ -159,6 +204,13 @@ export function openRescheduleSheet(kind, item, onChange) {
       patch = { date: newDate, startTime: newStart, endTime: newStart ? newEnd : null, ...rl.patch };
       if (!newStart && hadLength) patch.durationMins = hadLength;
       updater = store.updateTask;
+    }
+
+    // Time block link (only when the picker is shown); the block's time is already in the fields above.
+    if (blockSel) {
+      const k = parseBlockKey(blockSel.value);
+      prev = { ...prev, blockId: item.blockId || null, blockSlot: item.blockSlot };
+      patch = { ...patch, blockId: k.id, blockSlot: k.slot || undefined };
     }
 
     const prevHistory = item.history;

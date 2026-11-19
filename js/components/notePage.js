@@ -151,13 +151,21 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
   const vv = window.visualViewport;
   // Only touches the layout when the visible area really changed, so tapping a misspelled word
   // (which makes the browser's suggestion bar flicker the viewport) can't resize the page and drop the keyboard.
-  let lastH = -1, lastTop = -1, fitFrame = 0;
+  // The keyboard opening or closing (a big change) is followed straight away. A small change while the keyboard stays up
+  // (moving to a new line makes it re-measure itself a few pixels) waits until it has settled, so the tool bar doesn't hop
+  // up and down and leave a see-through strip above the keyboard.
+  let lastH = -1, lastTop = -1, fitFrame = 0, settleTimer = 0;
+  const applyHeight = (h) => { root.style.height = `${h}px`; lastH = h; };
   const fit = () => {
     if (!vv || fitFrame) return;
     fitFrame = requestAnimationFrame(() => {
       fitFrame = 0;
       const h = Math.round(vv.height), top = Math.round(vv.offsetTop);
-      if (h !== lastH) { root.style.height = `${h}px`; lastH = h; }
+      if (h !== lastH) {
+        clearTimeout(settleTimer);
+        if (lastH < 0 || Math.abs(h - lastH) >= 100) applyHeight(h);
+        else settleTimer = setTimeout(() => applyHeight(Math.round(vv.height)), 160);
+      } else clearTimeout(settleTimer);
       if (top !== lastTop) { root.style.transform = `translateY(${top}px)`; lastTop = top; }
     });
   };
@@ -712,6 +720,7 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
     clearTimeout(saveTimer);
     document.removeEventListener("selectionchange", refreshState);
     if (vv) { vv.removeEventListener("resize", fit); vv.removeEventListener("scroll", fit); }
+    clearTimeout(settleTimer);
     window.removeEventListener("popstate", onPop);
     document.removeEventListener("visibilitychange", onHide);
     window.removeEventListener("pagehide", onHide);
