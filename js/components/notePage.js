@@ -153,7 +153,7 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
   // (which makes the browser's suggestion bar flicker the viewport) can't resize the page and drop the keyboard.
   // The keyboard opening or closing (a big change) is followed straight away. A small change while the keyboard stays up
   // (moving to a new line makes it re-measure itself a few pixels) waits until it has settled, so the tool bar doesn't hop
-  // up and down and leave a see-through strip above the keyboard.
+  // up and down and leave a see-through strip above the keyboard. A keyboard that only gets a few pixels shorter is ignored.
   let lastH = -1, lastTop = -1, fitFrame = 0, settleTimer = 0;
   const applyHeight = (h) => { root.style.height = `${h}px`; lastH = h; };
   const fit = () => {
@@ -161,9 +161,13 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
     fitFrame = requestAnimationFrame(() => {
       fitFrame = 0;
       const h = Math.round(vv.height), top = Math.round(vv.offsetTop);
+      const keyboardUp = lastH >= 0 && lastH < window.innerHeight - 100;
       if (h !== lastH) {
         clearTimeout(settleTimer);
-        if (lastH < 0 || Math.abs(h - lastH) >= 100) applyHeight(h);
+        // Keyboard only a few pixels shorter (e.g. the suggestion strip changing on a new line): leave the bar exactly where it is.
+        // The dark area under the bar fills the little gap.
+        if (keyboardUp && h > lastH && h - lastH <= 24) { /* ignore */ }
+        else if (lastH < 0 || Math.abs(h - lastH) >= 100) applyHeight(h);
         else settleTimer = setTimeout(() => applyHeight(Math.round(vv.height)), 160);
       } else clearTimeout(settleTimer);
       if (top !== lastTop) { root.style.transform = `translateY(${top}px)`; lastTop = top; }

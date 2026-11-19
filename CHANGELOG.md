@@ -1,5 +1,8 @@
 # DayFlow changelog
 
+## v55 — Note tool bar holds still
+- While the keyboard is up, the note tool bar no longer moves when the keyboard only changes by a few pixels (new line, suggestion strip). A larger change (keyboard opening, closing or switching to a taller layout) still moves it.
+
 ## v54 — Note tool bar stays put when you go to a new line
 - Moving to the next line in a note no longer makes the tool bar hop up and down or leave a see-through strip above the keyboard. Small keyboard height changes now wait until they settle (opening and closing the keyboard still follow immediately), and the area under the bar is filled with its own dark colour.
 
