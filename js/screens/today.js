@@ -66,7 +66,7 @@ export function renderToday(container) {
   segs.forEach((seg, i) => {
     let linked = [];
     if (seg.kind === "starts") {
-      linked = itemsLinkedTo(seg.block.id, selectedDate)
+      linked = itemsLinkedTo(seg.block.id, selectedDate, seg.slot || 0)
         .map(({ kind, item }) => items.find((x) => x.kind === kind && x.id === item.id))
         .filter(Boolean)
         .sort((x, y) => timeOf(x) - timeOf(y));

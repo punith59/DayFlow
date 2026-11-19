@@ -18,7 +18,8 @@ let lastRestore = null;
 // Same idea for the most recent wipe. Only one of the two is ever kept, the newer one.
 let lastWipe = null;
 
-function countOf(value) {
+function countOf(value, key) {
+  if (key === "timeBlocks" && Array.isArray(value)) return value.filter((b) => !b.deletedFrom).length; // deleted blocks are only kept for past days
   if (Array.isArray(value)) return value.length;
   if (value && typeof value === "object") return Object.values(value).some((v) => (Array.isArray(v) ? v.length : v != null)) ? 1 : 0;
   return 0;
@@ -32,7 +33,7 @@ function fmtWhen(iso) {
 
 function currentCounts() {
   const all = store.exportAll();
-  return COUNT_ORDER.map((k) => ({ key: k, label: LABELS[k], n: countOf(all[k]) }));
+  return COUNT_ORDER.map((k) => ({ key: k, label: LABELS[k], n: countOf(all[k], k) }));
 }
 
 function download(json, filename) {
@@ -63,20 +64,33 @@ function canShareFiles() {
   } catch (e) { return false; }
 }
 
+const SETTING_KEYS = ["settings", "palette", "colorHistory"];
+
 function openRestorePreview(fileName, data, clean, onDone) {
   const now = store.exportAll();
-  const rows = COUNT_ORDER.filter((k) => k in clean).map((k) => `
-    <div class="bk-row"><span>${LABELS[k]}</span><span class="bk-nums">${countOf(clean[k])}<small> in file · ${countOf(now[k])} now</small></span></div>`).join("");
-  const extra = ["settings", "college"].filter((k) => k in clean).map((k) => LABELS[k]);
+  const hasSettings = SETTING_KEYS.some((k) => k in clean);
   const when = data.exportedAt ? fmtWhen(data.exportedAt) : null;
   const ver = data.appVersion ? ` · DayFlow ${escapeHtml(data.appVersion)}` : "";
+  const keepOn = () => hasSettings && (document.querySelector('input[name="rs-mode"]:checked') || {}).value !== "all";
+  const shown = (keep) => Object.keys(clean).filter((k) => !(keep && SETTING_KEYS.includes(k)));
+  const rowsHtml = (keep) => COUNT_ORDER.filter((k) => shown(keep).includes(k)).map((k) => `
+    <div class="bk-row"><span>${LABELS[k]}</span><span class="bk-nums">${countOf(clean[k], k)}<small> in file · ${countOf(now[k], k)} now</small></span></div>`).join("");
+  const extraHtml = (keep) => {
+    const extra = ["settings", "college"].filter((k) => shown(keep).includes(k)).map((k) => LABELS[k]);
+    return extra.length ? `Also included: ${extra.join(", ").toLowerCase()}.` : "";
+  };
 
   openSheet(`
     <button class="icon-btn sheet-close" data-action="close" aria-label="Close">✕</button>
     <h2 class="sheet-title">Restore this backup?</h2>
     <p class="bk-file">${escapeHtml(fileName)}${when ? `<br><small>Saved ${escapeHtml(when)}${ver}</small>` : ""}</p>
-    <div class="bk-rows">${rows}</div>
-    ${extra.length ? `<p class="bk-note">Also included: ${extra.join(", ").toLowerCase()}.</p>` : ""}
+    ${hasSettings ? `
+      <label class="wipe-opt"><input type="radio" name="rs-mode" value="keep" checked />
+        <span><b>Keep my settings</b><small>Restores your data only. This device's settings and saved colours stay as they are.</small></span></label>
+      <label class="wipe-opt"><input type="radio" name="rs-mode" value="all" />
+        <span><b>Everything</b><small>Also replaces settings and saved colours with the ones in the backup.</small></span></label>` : ""}
+    <div class="bk-rows" id="rs-rows" style="margin-top:10px">${rowsHtml(hasSettings)}</div>
+    <p class="bk-note" id="rs-extra">${extraHtml(hasSettings)}</p>
     <p class="bk-note">This replaces the matching data in DayFlow with what's in the file. Anything the file doesn't contain stays as it is. You can undo it right after.</p>
     <div class="btn-row">
       <button class="btn" id="bk-cancel">Cancel</button>
@@ -84,11 +98,22 @@ function openRestorePreview(fileName, data, clean, onDone) {
     </div>
   `);
   wireSheetClose();
+  const confirmBtn = document.getElementById("bk-confirm");
+  const paint = () => {
+    const keep = keepOn();
+    document.getElementById("rs-rows").innerHTML = rowsHtml(keep);
+    document.getElementById("rs-extra").innerHTML = extraHtml(keep);
+    confirmBtn.disabled = !shown(keep).length;
+  };
+  document.querySelectorAll('input[name="rs-mode"]').forEach((r) => r.addEventListener("change", paint));
+  paint();
   document.getElementById("bk-cancel").addEventListener("click", closeSheet);
-  document.getElementById("bk-confirm").addEventListener("click", () => {
+  confirmBtn.addEventListener("click", () => {
     let before;
     try {
-      before = store.importAll(data);
+      const use = { ...data };
+      if (keepOn()) SETTING_KEYS.forEach((k) => { delete use[k]; });
+      before = store.importAll(use);
     } catch (e) {
       closeSheet();
       showToast(e.message || "Couldn't restore this backup", 4000);
@@ -97,8 +122,7 @@ function openRestorePreview(fileName, data, clean, onDone) {
     closeSheet();
     lastRestore = before;
     lastWipe = null;
-    const undo = () => { store.restoreRawSnapshot(before); lastRestore = null; applyAccent(); notifyChanged(); onDone(); };
-    applyAccent();
+    const undo = () => { store.restoreRawSnapshot(before); lastRestore = null; notifyChanged(); onDone(); };
     notifyChanged();
     onDone();
     showUndoToast("Backup restored", undo, 9000);
@@ -110,7 +134,7 @@ function openWipeSheet(onDone) {
     const all = store.exportAll();
     const keys = ["tasks", "events", "deadlines", "notes", "notebooks", "goals", "timeBlocks", "blockExceptions"];
     if (everything) keys.push("palette", "colorHistory");
-    const rows = keys.map((k) => `<div class="bk-row"><span>${LABELS[k]}</span><span class="bk-nums">${countOf(all[k])}</span></div>`).join("");
+    const rows = keys.map((k) => `<div class="bk-row"><span>${LABELS[k]}</span><span class="bk-nums">${countOf(all[k], k)}</span></div>`).join("");
     return rows + (everything ? `<div class="bk-row"><span>Settings</span><span class="bk-nums"><small>reset to default</small></span></div>` : "");
   };
   const last = store.getMeta().lastExportAt || store.getMeta().lastDriveAt;
@@ -152,7 +176,6 @@ function openWipeSheet(onDone) {
     closeSheet();
     lastWipe = before;
     lastRestore = null;
-    applyAccent();
     notifyChanged();
     onDone();
     showUndoToast("Data wiped", () => { undoWipe(onDone); }, 9000);
@@ -163,15 +186,8 @@ function undoWipe(onDone) {
   if (!lastWipe) return;
   store.restoreRawSnapshot(lastWipe);
   lastWipe = null;
-  applyAccent();
   notifyChanged();
   onDone();
-}
-
-function applyAccent() {
-  const accent = store.getSettings().accent;
-  if (accent && accent.toLowerCase() !== "#34c77b") document.documentElement.style.setProperty("--accent", accent);
-  else document.documentElement.style.removeProperty("--accent");
 }
 
 function handleText(name, text, onDone) {
@@ -371,7 +387,6 @@ export function renderBackup(container, onBack) {
   if (undoBtn) undoBtn.addEventListener("click", () => {
     store.restoreRawSnapshot(lastRestore);
     lastRestore = null;
-    applyAccent();
     notifyChanged();
     showToast("Restore undone");
     refresh();

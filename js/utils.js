@@ -133,9 +133,9 @@ export function greeting() {
 }
 
 export const PALETTE = [
-  "#5CBED6", "#4FA3E3", "#E3B34F", "#E36B9E",
+  "#5CBED6", "#E0605A", "#E3B34F", "#E36B9E",
   "#9B7BE0", "#4FD1C5", "#E3854F", "#7BE0A0",
-  "#6E9BE0", "#D0D0C8",
+  "#B8D95A", "#D0D0C8",
 ];
 
 export const TASK_EMOJIS = ["📌","📝","💪","📚","🍽️","🧹","💻","🎯","☎️","🧘","🛒","🎨","💤","✈️","💰"];

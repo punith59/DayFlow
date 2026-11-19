@@ -1,5 +1,24 @@
 # DayFlow changelog
 
+## v51 — A time block can repeat more than once a day
+- In the time block editor, **+ Add another time** adds a second (third…) start and end for the same block, e.g. Gym 6–7 AM and 6–7 PM. With "Different times on different days" on, each day has its own **+ Another time on…** button. Times on one day can't overlap.
+- Each time shows as its own card on Today and in the Calendar. When you attach a task, event or deadline to a block, the picker lists each time separately (e.g. "Gym — 6:00 AM–7:00 AM" and "Gym — 6:00 PM–7:00 PM"), and the item stays under the one you chose.
+- Pausing, editing and deleting a block treat all its times together. "No <block> on this day" skips all of that day's times.
+
+## v50 — Pause and resume time blocks; edits and deletes only affect today onward
+- **Pause / Resume** a time block (open the block → Pause…) or a whole group (Pause group… / Resume group… above the group's blocks). Pick today or a later date; the block stops showing from that date and every earlier day stays exactly as it was. Resume picks a date too; the days in between stay empty. The list shows "Paused" and when it resumes.
+- Tasks, events and deadlines attached to a block from the pause date on are detached and keep the block's time (filled in only where they had none). Repeating items stay attached. Undo restores everything.
+- **Editing** a block (name, days, times, place, colour, group) now changes it from today onward; earlier days keep how it was.
+- **Deleting** a block removes it from today onward only. Earlier days keep showing it, and items attached from today on are detached with the block's time. Undo restores it.
+- Fixed a possible error on an overnight block that was paused from today. Backup counts ignore deleted blocks.
+
+## v49 — Accent colour is permanent
+- The cyan accent (#5CBED6) is now fixed in the stylesheet. DayFlow no longer reads an accent colour from saved settings or from backups, so a restore can never change it. Nothing looks different.
+
+## v48 — New default colours; restore keeps your settings
+- Default colour palette: the two extra blues (#4FA3E3, #6E9BE0) are replaced by a coral red (#E0605A) and a lime (#B8D95A). Only the built-in list changes: a palette you've already edited, and colours already used on blocks or tasks, stay as they are. The "Add colour" picker now starts on a neutral tan.
+- Restoring a backup (from a file or from Google Drive) now asks **Keep my settings** (default: restores your data only; this device's settings and saved colours are left alone) or **Everything** (also replaces settings and saved colours). Backups still save everything.
+
 ## v47 — Quick-add shortcuts
 - Long-press the installed DayFlow icon to get **New task**, **New event**, **New deadline** and **New note**; each opens that form straight away (drag one to the home screen for its own icon). Shortcut icons are full-bleed with larger symbols so they fill the round frame. Android reads the list when the app is installed, so remove and reinstall DayFlow once (back up first) to see it.
 

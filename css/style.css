@@ -1692,3 +1692,18 @@ body.np-open .fab, body.np-open .nav-bar-wrap { visibility: hidden; }
 .more-switch.on { background: rgb(var(--glass-tint-strong)); }
 .more-switch.on i { transform: translateX(18px); }
 @media (prefers-reduced-motion: reduce) { .more-switch, .more-switch i { transition: none; } }
+
+/* Pause / resume time blocks */
+.tb-grp-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 2px 0 8px; }
+.tb-grp-btn { padding: 6px 12px; font-size: 13px; }
+.tb-paused .tb-title, .tb-paused .tb-bar { opacity: 0.55; }
+.tb-pause-tag { color: var(--accent-strong); }
+
+/* Extra times in a time block */
+.tb-time-sub { margin-top: 2px; }
+.tb-extra-rows { margin-top: 8px; }
+.tb-x-del { flex: none; width: 30px; min-width: 30px; padding: 0; }
+.tb-time-sub input[type="time"] { padding-left: 6px; padding-right: 2px; font-size: 13px; }
+.tb-time-sub .tb-time-day { width: 34px; }
+.tb-add-time { margin: 6px 0 10px; padding: 6px 12px; font-size: 13px; }
+.tb-add-sub { margin: 2px 0 8px 42px; }

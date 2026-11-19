@@ -49,7 +49,7 @@ export function renderMore(container) {
   if (moreView === "palette") { renderPalette(container, back); return; }
   if (moreView === "backup") { renderBackup(container, back); return; }
 
-  const n = store.getTimeBlocks().length;
+  const n = store.getLiveTimeBlocks().length;
   const offs = store.getBlockExceptions().length;
   const saved = store.getPalette().length;
   const hist = store.getColorHistory().length;

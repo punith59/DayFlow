@@ -1,4 +1,4 @@
-const CACHE_NAME = "dayflow-cache-v47";
+const CACHE_NAME = "dayflow-cache-v51";
 const SCOPE_URL = new URL(self.registration.scope);
 
 const PRECACHE_URLS = [

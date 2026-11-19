@@ -77,13 +77,6 @@ function renderCurrentScreen() {
   window.scrollTo(0, y);
 }
 
-// Apply saved accent color
-const settings = store.getSettings();
-// (The old default green is ignored, so older saved settings and backups take the current theme colour.)
-if (settings.accent && settings.accent.toLowerCase() !== "#34c77b") {
-  document.documentElement.style.setProperty("--accent", settings.accent);
-}
-
 // Ask the browser not to clear this app's data automatically (it may ignore the request).
 if (navigator.storage && navigator.storage.persist) {
   navigator.storage.persist().catch(() => {});

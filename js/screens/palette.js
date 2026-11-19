@@ -26,7 +26,7 @@ function plHistoryHtml(history) {
 // Adds a colour to the palette via the picker. Used by the "+ Add colour" button and the + FAB.
 export function openAddPaletteColor(onDone) {
   openColorPicker({
-    color: "#4FA3E3",
+    color: "#C9A27A",
     title: "Add to palette",
     confirmLabel: "Save to palette",
     onConfirm: (hex) => {

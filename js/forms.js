@@ -1,7 +1,7 @@
 import { trackDraft } from "./session.js";
 import { store } from "./store.js";
 import { openSheet, closeSheet, wireSheetClose, sheet, notifyChanged } from "./components/sheet.js";
-import { blocksForPicker, blockPickerLabel, getBlock, blockIsOvernight, blockTimesOn } from "./timeblocks.js";
+import { blockPickerOptions, getBlock, blockIsOvernight, blockSlotTimes, blockKey, parseBlockKey } from "./timeblocks.js";
 import { openColorPicker } from "./components/colorPicker.js";
 import { goalPickerList } from "./goals.js";
 import { taskDeadlineProblem, keyToDate, sameColor, uid, dateKey, escapeHtml, timeToMinutes, pad2, formatTime, formatShortDate, formatDurationMins, isInPast, PALETTE, TYPE_EMOJI, RECURRENCE_OPTIONS } from "./utils.js";
@@ -65,21 +65,27 @@ export function wireSwatches(groupId, onPick) {
 }
 
 // ---- Time block picker (shown only once the user has created time blocks) ----
-function blockOptionsHtml(day, selectedId) {
-  const blocks = blocksForPicker(day);
-  const sel = selectedId ? getBlock(selectedId) : null;
-  const stray = sel && !blocks.some((b) => b.id === sel.id)
-    ? `<option value="${sel.id}" selected>${escapeHtml(sel.title)} — not on this date</option>` : "";
-  return `<option value="">None</option>${stray}${blocks
-    .map((b) => `<option value="${b.id}" ${b.id === selectedId ? "selected" : ""}>${escapeHtml(blockPickerLabel(b, day))}</option>`).join("")}`;
+function blockOptionsHtml(day, selectedKey) {
+  const opts = blockPickerOptions(day);
+  const { id: selId } = parseBlockKey(selectedKey);
+  const sel = selId ? getBlock(selId) : null;
+  // A block that repeats twice a day gives two choices. If the stored slot doesn't exist on this date, pick the block's last slot that does.
+  const key = opts.some((o) => o.key === selectedKey) ? selectedKey : ((opts.filter((o) => o.block.id === selId).pop() || {}).key || null);
+  const stray = sel && !key
+    ? `<option value="${selectedKey}" selected>${escapeHtml(sel.title)} — not on this date</option>` : "";
+  return `<option value="">None</option>${stray}${opts
+    .map((o) => `<option value="${o.key}" ${o.key === key ? "selected" : ""}>${escapeHtml(o.label)}</option>`).join("")}`;
 }
-function blockFieldHtml(prefix, day, selectedId) {
-  if (!store.getTimeBlocks().length) return "";
+function existingBlockKey(existing, presetKey) {
+  return existing && existing.blockId ? blockKey(existing.blockId, existing.blockSlot) : presetKey;
+}
+function blockFieldHtml(prefix, day, selectedKey) {
+  if (!store.getLiveTimeBlocks().length) return "";
   return `
     <div class="field">
       <label>Time block (optional)</label>
       <p class="field-hint">Attach this to a class period or routine — e.g. a test during your Math class.</p>
-      <select id="${prefix}-block">${blockOptionsHtml(day, selectedId)}</select>
+      <select id="${prefix}-block">${blockOptionsHtml(day, selectedKey)}</select>
       <p class="field-hint field-hint-after" id="${prefix}-block-hint"></p>
     </div>`;
 }
@@ -98,9 +104,10 @@ function wireBlockSelect(prefix, dateId, startId, endId, applyNow) {
   if (startId && !endId) {
     const due = document.getElementById(startId);
     const sync = () => {
-      const b = getBlock(select.value);
+      const k = parseBlockKey(select.value);
+      const b = getBlock(k.id);
       if (b) {
-        due.value = blockTimesOn(b, dowOf()).startTime;
+        due.value = blockSlotTimes(b, dowOf(), k.slot).startTime;
         due.disabled = true;
         hint.textContent = "Due time follows the block's start. Unlink it to choose your own time.";
       } else {
@@ -126,9 +133,10 @@ function wireBlockSelect(prefix, dateId, startId, endId, applyNow) {
   let filled = { s: null, e: null };
   const fill = () => {
     hint.textContent = "";
-    const b = getBlock(select.value);
+    const k = parseBlockKey(select.value);
+    const b = getBlock(k.id);
     if (!b || !startId) return;
-    const tm = blockTimesOn(b, dowOf());
+    const tm = blockSlotTimes(b, dowOf(), k.slot);
     const s = document.getElementById(startId);
     const e = document.getElementById(endId);
     const untouched = (!s.value && !e.value) || (s.value === filled.s && e.value === filled.e);
@@ -145,9 +153,12 @@ function wireBlockSelect(prefix, dateId, startId, endId, applyNow) {
   });
   if (applyNow) fill();
 }
-function readBlockId(prefix, existing) {
+// { blockId, blockSlot } for the chosen time block (blockSlot only when it isn't the first time of the block).
+function readBlockFields(prefix, existing) {
   const el = document.getElementById(`${prefix}-block`);
-  return el ? el.value || null : (existing && existing.blockId) || null;
+  if (!el) return { blockId: (existing && existing.blockId) || null, blockSlot: existing && existing.blockSlot ? existing.blockSlot : undefined };
+  const k = parseBlockKey(el.value);
+  return { blockId: k.id, blockSlot: k.slot || undefined };
 }
 
 // Goals a task, event or deadline can belong to (active and paused, plus the one already chosen).
@@ -415,7 +426,7 @@ export function openTaskComposer(existing = null, presetDate = null, presetLink 
       ${durationChipsHtml("tf")}
     </div>
 
-    ${blockFieldHtml("tf", t.date, (existing && existing.blockId) || presetBlockId)}
+    ${blockFieldHtml("tf", t.date, existingBlockKey(existing, presetBlockId))}
 
     ${goalFieldHtml(t.goalId, "tf-goal")}
 
@@ -503,7 +514,7 @@ export function openTaskComposer(existing = null, presetDate = null, presetLink 
       color,
       linkedType: linkType || null,
       linkedId: linkId || null,
-      blockId: readBlockId("tf", existing),
+      ...readBlockFields("tf", existing),
       recurrence: document.getElementById("tf-recurrence").value || "none",
     };
     if (existing) store.updateTask(existing.id, payload);
@@ -541,7 +552,7 @@ export function openEventComposer(existing = null, presetDate = null, onSaved, p
       <label>Or set a duration from the start time</label>
       ${durationChipsHtml("ef")}
     </div>
-    ${blockFieldHtml("ef", e.date, (existing && existing.blockId) || presetBlockId)}
+    ${blockFieldHtml("ef", e.date, existingBlockKey(existing, presetBlockId))}
     ${goalFieldHtml(e.goalId, "ef-goal")}
     <div class="field"><label>Location (optional)</label><input type="text" id="ef-location" value="${escapeHtml(e.location || "")}" placeholder="Where is it?" /></div>
     <div class="field"><label>Description (optional)</label><textarea id="ef-description" rows="3">${escapeHtml(e.description || "")}</textarea></div>
@@ -589,7 +600,7 @@ export function openEventComposer(existing = null, presetDate = null, onSaved, p
       endTime: document.getElementById("ef-end").value || null,
       location: document.getElementById("ef-location").value || "",
       description: document.getElementById("ef-description").value || "",
-      blockId: readBlockId("ef", existing),
+      ...readBlockFields("ef", existing),
       goalId: readGoalId("ef-goal", existing),
       recurrence: document.getElementById("tf-recurrence").value || "none",
       color,
@@ -624,7 +635,7 @@ export function openDeadlineComposer(existing = null, presetDate = null, onSaved
       <div class="field"><label>Due time (optional)</label><input type="time" id="df-duetime" value="${d.dueTime || ""}" /></div>
     </div>
     ${fieldErrorHtml("df-time-error")}
-    ${blockFieldHtml("df", d.dueDate, (existing && existing.blockId) || presetBlockId)}
+    ${blockFieldHtml("df", d.dueDate, existingBlockKey(existing, presetBlockId))}
     ${goalFieldHtml(d.goalId, "df-goal", "A deadline linked to a goal works as a milestone toward it.")}
     <div class="field"><label>Location (optional)</label><input type="text" id="df-location" value="${escapeHtml(d.location || "")}" placeholder="Where, if relevant" /></div>
     <div class="field"><label>Description (optional)</label><textarea id="df-description" rows="3">${escapeHtml(d.description || "")}</textarea></div>
@@ -670,7 +681,7 @@ export function openDeadlineComposer(existing = null, presetDate = null, onSaved
       dueTime: dueTimeVal,
       location: document.getElementById("df-location").value || "",
       description: document.getElementById("df-description").value || "",
-      blockId: readBlockId("df", existing),
+      ...readBlockFields("df", existing),
       goalId: readGoalId("df-goal", existing),
       recurrence: document.getElementById("tf-recurrence").value || "none",
       color,

@@ -234,7 +234,10 @@ export const store = {
   saveCollege(obj) { return write(KEYS.college, obj); },
 
   // ---- Time blocks (recurring parts of the user's existing schedule) ----
+  // Every block ever made, including ones deleted from today on (kept so past days still show them).
   getTimeBlocks() { return read(KEYS.timeBlocks, []); },
+  // Blocks the user can still see and manage (not deleted).
+  getLiveTimeBlocks() { return store.getTimeBlocks().filter((b) => !b.deletedFrom); },
   saveTimeBlocks(list) { return write(KEYS.timeBlocks, list); },
   addTimeBlock(block) {
     const list = store.getTimeBlocks();
@@ -292,7 +295,7 @@ export const store = {
   },
 
   // ---- Settings ----
-  getSettings() { return read(KEYS.settings, { accent: "#5CBED6" }); },
+  getSettings() { return read(KEYS.settings, {}); },
   saveSettings(obj) { return write(KEYS.settings, obj); },
 
   // ---- Device-only bookkeeping (not exported) ----

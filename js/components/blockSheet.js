@@ -2,7 +2,7 @@
 import { store } from "../store.js";
 import { openSheet, closeSheet, wireSheetClose, notifyChanged } from "./sheet.js";
 import { showUndoToast } from "./toast.js";
-import { blockSegmentsOn, segmentTimeLabel, itemsLinkedTo, blockDaysLabel } from "../timeblocks.js";
+import { blockSegmentsOn, segmentTimeLabel, itemsLinkedTo, blockDaysLabel, blockKey } from "../timeblocks.js";
 import { openTaskComposer, openEventComposer, openDeadlineComposer } from "../forms.js";
 import { escapeHtml, addDays, keyToDate, dateKey, formatTime, formatShortDate, WEEKDAY_NAMES, MONTH_NAMES, TYPE_EMOJI } from "../utils.js";
 
@@ -24,7 +24,7 @@ export function openBlockDaySheet(seg, opts = {}) {
   const day = seg.day;
   const startDay = seg.kind === "continues" ? addDays(day, -1) : day;
   const off = seg.off;
-  const linked = seg.kind === "starts" ? itemsLinkedTo(b.id, day) : [];
+  const linked = seg.kind === "starts" ? itemsLinkedTo(b.id, day, seg.slot || 0) : [];
   const isPast = day < dateKey();
   const canAdd = !off && seg.kind === "starts" && !isPast;
   const ownSkip = off && off.scope === "block" && off.target === b.id && off.from === startDay && (off.to || off.from) === startDay;
@@ -77,7 +77,7 @@ export function openBlockDaySheet(seg, opts = {}) {
 
   const q = (k) => document.querySelector(`#sheet [data-bs="${k}"]`);
   const reopen = () => {
-    const fresh = blockSegmentsOn(day).find((s) => s.block.id === b.id && s.kind === seg.kind);
+    const fresh = blockSegmentsOn(day).find((s) => s.block.id === b.id && s.kind === seg.kind && (s.slot || 0) === (seg.slot || 0));
     if (fresh) openBlockDaySheet(fresh, opts); else closeSheet();
   };
   if (q("back")) q("back").addEventListener("click", opts.onBack);
@@ -96,7 +96,7 @@ export function openBlockDaySheet(seg, opts = {}) {
     reopen();
     showUndoToast(`${b.title} restored`, () => { store.addBlockException(prev); notifyChanged(); reopen(); });
   });
-  if (q("event")) q("event").addEventListener("click", () => openEventComposer(null, day, null, b.id));
-  if (q("task")) q("task").addEventListener("click", () => openTaskComposer(null, day, null, null, b.id));
-  if (q("deadline")) q("deadline").addEventListener("click", () => openDeadlineComposer(null, day, null, b.id));
+  if (q("event")) q("event").addEventListener("click", () => openEventComposer(null, day, null, blockKey(b.id, seg.slot)));
+  if (q("task")) q("task").addEventListener("click", () => openTaskComposer(null, day, null, null, blockKey(b.id, seg.slot)));
+  if (q("deadline")) q("deadline").addEventListener("click", () => openDeadlineComposer(null, day, null, blockKey(b.id, seg.slot)));
 }
