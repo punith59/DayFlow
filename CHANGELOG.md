@@ -1,5 +1,8 @@
 # DayFlow changelog
 
+## v56 — Note page no longer twitches on a new line
+- While a note is open, the browser now resizes the page itself for the keyboard (a viewport setting that is switched back when you leave the note). Before, the page was positioned over a sliding window that Chrome nudged a few pixels when the caret moved, so the header and tool bar twitched for a frame.
+
 ## v55 — Note tool bar holds still
 - While the keyboard is up, the note tool bar no longer moves when the keyboard only changes by a few pixels (new line, suggestion strip). A larger change (keyboard opening, closing or switching to a taller layout) still moves it.
 

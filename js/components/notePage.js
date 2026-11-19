@@ -154,6 +154,11 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
   // The keyboard opening or closing (a big change) is followed straight away. A small change while the keyboard stays up
   // (moving to a new line makes it re-measure itself a few pixels) waits until it has settled, so the tool bar doesn't hop
   // up and down and leave a see-through strip above the keyboard. A keyboard that only gets a few pixels shorter is ignored.
+  // While a note is open, ask the browser to resize the page itself when the keyboard appears (instead of sliding a
+  // "visual viewport" over it). Then the page and its tool bar move with the keyboard natively and don't twitch when the caret moves.
+  const vpMeta = document.querySelector('meta[name="viewport"]');
+  const vpOriginal = vpMeta ? vpMeta.getAttribute("content") : null;
+  if (vpMeta && vpOriginal && !/interactive-widget/.test(vpOriginal)) vpMeta.setAttribute("content", `${vpOriginal}, interactive-widget=resizes-content`);
   let lastH = -1, lastTop = -1, fitFrame = 0, settleTimer = 0;
   const applyHeight = (h) => { root.style.height = `${h}px`; lastH = h; };
   const fit = () => {
@@ -161,6 +166,13 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
     fitFrame = requestAnimationFrame(() => {
       fitFrame = 0;
       const h = Math.round(vv.height), top = Math.round(vv.offsetTop);
+      // The browser already sized the page to the keyboard (or there is no keyboard): just fill the screen, nothing to chase.
+      if (Math.abs(window.innerHeight - h) <= 1 && top === 0) {
+        clearTimeout(settleTimer);
+        if (lastH !== -2) { root.style.height = "auto"; root.style.bottom = "0"; root.style.transform = ""; lastH = -2; lastTop = 0; }
+        return;
+      }
+      if (lastH === -2) { root.style.bottom = ""; lastH = -1; }
       const keyboardUp = lastH >= 0 && lastH < window.innerHeight - 100;
       if (h !== lastH) {
         clearTimeout(settleTimer);
@@ -725,6 +737,7 @@ export function openNotePage(existing = null, presetNotebookId = DEFAULT_NOTEBOO
     document.removeEventListener("selectionchange", refreshState);
     if (vv) { vv.removeEventListener("resize", fit); vv.removeEventListener("scroll", fit); }
     clearTimeout(settleTimer);
+    if (vpMeta && vpOriginal) vpMeta.setAttribute("content", vpOriginal);
     window.removeEventListener("popstate", onPop);
     document.removeEventListener("visibilitychange", onHide);
     window.removeEventListener("pagehide", onHide);
