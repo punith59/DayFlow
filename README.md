@@ -33,7 +33,8 @@ Plan your day, keep your notes, and follow your goals in one place — with no a
 - **Swipe a deadline right** to mark it met; **swipe left** to skip it.
 - **Tap** any item for its menu: Edit, Reschedule, Skip, Delete. **Press and hold** for a quick overview.
 - **Unfinished** — a button in the top-right corner appears when a task has slipped past: a timed task two hours after it ended, or an anytime task once its day is over. Open it to **Reschedule** or **Skip** each one. Rescheduling keeps the task's link to an event or deadline only if that date still comes after the task's new time.
-- **Time blocks** (under *More*) are repeating parts of your week, such as classes or sleep. Tasks and events can be placed inside them.
+- **Time blocks** (under *More*) are repeating parts of your week, such as classes or sleep. Tasks, events and deadlines can be placed inside them, and the Reschedule window can attach one too (the card then takes the block's time). A block can repeat more than once a day (**+ Add another time**). **Pause** a block, or a whole group, from a date and **Resume** it later; editing or deleting a block only changes today onward, so earlier days stay as they were.
+- **Shortcuts** — long-press the installed DayFlow icon for **New task, New event, New deadline** and **New note**. (Android reads these when the app is installed, so reinstall once after an update that changes them.)
 
 ### Calendar
 Swipe or use the arrows to change month. Dots under a date show what is planned. Tap a date to see its tasks, events and deadlines, and open it in Today.
@@ -51,7 +52,7 @@ Swipe or use the arrows to change month. Dots under a date show what is planned.
 
 ### More
 - **Time blocks** and **Colour palette** — your weekly shape and your saved colours.
-- **Backup & restore** — save a copy of everything to a `.json` file and restore it later (it previews what will change and can be undone). Optionally back up to your own Google Drive; this is always manual and only touches one file DayFlow creates. **Wipe data** clears everything, or everything except your settings.
+- **Backup & restore** — save a copy of everything to a `.json` file and restore it later (it previews what will change and can be undone; choose **Keep my settings** to restore your data only, or **Everything**). Optionally back up to your own Google Drive; this is always manual and only touches one file DayFlow creates. **Wipe data** clears everything, or everything except your settings.
 - **Reopen where I left off** — when on, coming back within 30 minutes returns you to the same screen, open note or unfinished form. Turn it off to always start on Today.
 - **Install DayFlow** — adds it to your home screen as a standalone app.
 
